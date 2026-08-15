@@ -1,0 +1,8 @@
+VozBar.app/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+*.egg-info/
+dist/
+build/
