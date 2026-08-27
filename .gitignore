@@ -1,6 +1,6 @@
-VozBar.app/
-.venv/
-__pycache__/
+vozbar/VozBar.app/
+vozbar/.venv/
+vozbar/__pycache__/
 *.pyc
 .DS_Store
 *.egg-info/
