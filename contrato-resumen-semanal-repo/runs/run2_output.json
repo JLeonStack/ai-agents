@@ -1,0 +1,25 @@
+{
+  "repo": "JLeonStack",
+  "period_note": "historial completo (usado como semana de prueba por tener huecos reales)",
+  "total_commits": 7,
+  "by_category": {
+    "feat": 0,
+    "fix": 0,
+    "refactor": 0,
+    "docs": 3,
+    "chore": 1,
+    "otros": 0,
+    "misc": 3
+  },
+  "commits": [
+    {"hash": "d72890c", "date": "2026-03-05", "category": "docs", "subject": "Update README by removing links and papers section"},
+    {"hash": "95e1675", "date": "2025-05-15", "category": "docs", "subject": "Update README.md"},
+    {"hash": "dac8992", "date": "2024-11-19", "category": "misc", "subject": "update profile"},
+    {"hash": "d63f4ed", "date": "2024-07-21", "category": "misc", "subject": "Delete"},
+    {"hash": "b10b855", "date": "2024-07-21", "category": "chore", "subject": "Add section"},
+    {"hash": "e8a0ec0", "date": "2024-03-23", "category": "docs", "subject": "Update README.md"},
+    {"hash": "4189746", "date": "2024-03-23", "category": "misc", "subject": "Initial commit"}
+  ],
+  "executive_summary": "Actividad esporádica de mantenimiento del README de perfil, sin commits de código.",
+  "risks": ["Hueco de más de 9 meses entre 2025-05-15 y 2026-03-05", "Commit sin mensaje descriptivo: 'Delete'"]
+}

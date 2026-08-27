@@ -1,0 +1,32 @@
+{
+  "repo": "jacaris",
+  "period_note": "semana del 17 al 24 de marzo de 2025",
+  "total_commits": 15,
+  "by_category": {
+    "feat": 10,
+    "fix": 0,
+    "refactor": 1,
+    "docs": 0,
+    "chore": 3,
+    "otros": 1
+  },
+  "commits": [
+    {"hash": "e270b93", "date": "2025-03-24", "category": "feat", "subject": "feat(jacaris-command): add zustand for state management"},
+    {"hash": "6fa15b3", "date": "2025-03-24", "category": "refactor", "subject": "refactor(jacaris-command): update file structure and add initial tests"},
+    {"hash": "58b7e9f", "date": "2025-03-24", "category": "feat", "subject": "feat(jacaris-command): setting up package and config (#1)"},
+    {"hash": "dbb3e5d", "date": "2025-03-23", "category": "chore", "subject": "chore(license): update copyright year in LICENSE file to 2025"},
+    {"hash": "b2a5253", "date": "2025-03-23", "category": "feat", "subject": "feat(playground): implement chat interface for AI interaction in CommandMenu"},
+    {"hash": "a012b51", "date": "2025-03-21", "category": "feat", "subject": "feat(playground): integrate dynamic model selection and improve model fetching"},
+    {"hash": "c761819", "date": "2025-03-20", "category": "feat", "subject": "feat(playground): refine CommandMenu design and animations"},
+    {"hash": "ef1dab2", "date": "2025-03-20", "category": "feat", "subject": " feat(playground): enhance CommandMenu styling and loading indicators"},
+    {"hash": "a5c841c", "date": "2025-03-20", "category": "feat", "subject": "  feat(playground): add AI utility functions and integrate with Playground component"},
+    {"hash": "6f3f958", "date": "2025-03-20", "category": "chore", "subject": "chore(playground): update pnpm-lock.yaml and package.json for new ai-sdk dependency"},
+    {"hash": "307202e", "date": "2025-03-19", "category": "chore", "subject": "chore(playground): update dependencies in pnpm-lock.yaml and package.json"},
+    {"hash": "d715b5f", "date": "2025-03-19", "category": "feat", "subject": "feat(playground): improve text selection handling and floating button behavior"},
+    {"hash": "8e1e5b0", "date": "2025-03-19", "category": "feat", "subject": "feat(playground): enhance CommandMenu with search functionality and state management"},
+    {"hash": "db2964e", "date": "2025-03-19", "category": "feat", "subject": "feat(playground): enhance Playground component with text selection and floating command button"},
+    {"hash": "5528766", "date": "2025-03-19", "category": "feat", "subject": "feat(playground): enhance command menu with action selection and improved UI"}
+  ],
+  "executive_summary": "Semana enfocada en el CommandMenu del playground (búsqueda, selección de modelo, estilos) y en arrancar el paquete jacaris-command con estado en zustand y tests iniciales.",
+  "risks": ["6 commits el mismo día (2025-03-20/19) sobre el mismo componente CommandMenu, indica commits chicos sin agrupar"]
+}

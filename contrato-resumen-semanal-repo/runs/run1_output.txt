@@ -1,0 +1,29 @@
+CONTRATO USADO: system_prompt v1 (ver README, sección "Iteración 1")
+CASO: repo meli-challenge, log real (13 commits, 2025-12-09 a 2025-12-22)
+FECHA DE CORRIDA: 2026-08-20 (simulada, primera corrida)
+
+--- OUTPUT DEL AGENTE ---
+
+Resumen semanal — meli-challenge
+
+Esta semana el equipo trabajó bastante en documentación y en el sistema de memoria del bot. Se agregó:
+
+**Documentación**
+- Update README to include demo information and initial load instructions
+- Refactor README to consolidate security and caching sections
+- Update README to include agentic capabilities...
+- Update README to include optional requirements and their status... (x2, aparece duplicado)
+- Enhance backend configuration and documentation for LLM integration...
+- Update README to use 'docker compose' command instead of 'docker-compose'...
+
+**Mejoras / Backend**
+- Implement LLM benchmarking and memory strategy enhancements
+- Add memory comparison and implementation documentation
+- Implement memory strategies for conversation management
+- Add intelligent caching system to optimize performance and reduce API costs
+- Merge branch 'main' of github.com:JLeonStack/meli-challenge
+- Initialize backend and frontend services with Docker support...
+
+En general la semana estuvo enfocada en dejar el proyecto documentado y en sumar memoria conversacional con caching.
+
+--- FIN OUTPUT ---
