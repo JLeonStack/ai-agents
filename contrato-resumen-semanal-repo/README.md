@@ -2,44 +2,44 @@
 
 ## Qué construí
 
-La tarea que elegí es una que hago (o debería hacer) todas las semanas: abrir el `git log` de cada repo activo y armar el resumen para el status report. Es repetitiva, siempre sigue la misma lógica, y necesito que el resultado se pueda pegar junto con el de otros repos sin tener que reacomodar nada a mano. Así que en vez de pedírselo suelto cada vez, le escribí el contrato completo a un agente: `system_prompt.md` con su identidad fija y `user_prompt.md` con el pedido puntual (la plantilla que voy a reusar cada semana, cambiando solo el repo, el período y el log pegado).
+Un contrato completo (system prompt + user prompt) para un agente que convierte el `git log` crudo de un repo en un resumen semanal estructurado, listo para pegar en un status report. Es para mí como tech lead: hoy armo ese resumen a mano cada semana, y quiero que el output de cada repo se pueda comparar/pegar sin reformatear nada.
 
-Las seis piezas que vimos en clase están ahí, separadas por sección: Rol, Contexto, Tarea, Restricciones, Formato de salida, Ejemplos.
+## Cómo se lo pedí
 
-## Cómo lo probé
+La consigna de la materia, tal cual:
 
-Corrí el contrato tres veces, con `git log` real de tres repos míos —nada inventado—:
+> Elegí una tarea recurrente [...] y escribile el contrato completo para que un agente la haga por vos: un system prompt (identidad, reglas, formato por defecto) y un user prompt (el pedido puntual), cubriendo las seis piezas vistas en clase: rol, contexto, tarea, restricciones, formato y ejemplos. [...] Corrélo tres veces con casos reales y documentá dos iteraciones de mejora: qué falló (textual, no "quedó raro"), qué pieza del contrato tocaste, y qué cambió en la salida. Una pieza por vez.
 
-- **`meli-challenge`**: log prolijo, muchos commits de README y del sistema de memoria del bot. El caso "fácil" para arrancar.
-- **`JLeonStack`**: mi propio perfil de GitHub. Log sucio a propósito: commits sin prefijo tipo `Delete` o `update profile`, y un hueco de nueve meses entre dos commits. Lo elegí porque sabía que iba a romper algo.
-- **`jacaris`**: un side project con Conventional Commits reales (`feat(x):`, `chore(x):`). Es el caso que usé para la corrida final, con el contrato ya corregido.
+A partir de ahí, mis pasos fueron:
 
-Los tres outputs quedaron guardados en [`runs/`](runs/).
+1. "Necesito completar esta tarea [pega la consigna completa]. Ayudame a pensar una idea, y hacer cada una de las cosas."
+2. Yo mismo elegí la idea (resumen semanal de repo) y armé `system_prompt.md` v1 con las seis piezas, pero con el formato de salida suelto ("Devolvé un resumen claro y organizado por categoría").
+3. Lo corrí contra el `git log` real de `meli-challenge` — falló (ver abajo). Ajusté solo la pieza de Formato.
+4. Lo corrí contra el `git log` real de `JLeonStack` — falló distinto. Ajusté Tarea y Restricciones.
+5. Lo corrí contra `jacaris` con el contrato ya corregido — anduvo.
+6. "Antes [de pushear], hacé que el texto del README no parezca machine-like sino human-like." — reescribí el README en primera persona, tono conversacional.
+7. "Reorganizá los proyectos, que queden en carpetas separadas, hoy está todo mezclado." — moví VozBar a su propia carpeta `vozbar/` para que esta entrega no quedara mezclada en la raíz del repo.
+8. "El README del proyecto desarrollado debería tener esta estructura [pega el template estándar de la materia]." — reescribí este README con las secciones Qué construí / Cómo se lo pedí / Qué funciona / Qué falta o qué falló / Qué aprendí.
 
-## Primera iteración
+## Qué funciona
 
-Arranqué con un `system_prompt` bastante flojo en la parte de formato. Literal decía:
+- El contrato final (`system_prompt.md` + `user_prompt.md`) produce JSON válido y parseable en las tres corridas, con el mismo schema exacto: `repo`, `period_note`, `total_commits`, `by_category`, `commits[]`, `executive_summary`, `risks`.
+- Las categorías (`feat`, `fix`, `refactor`, `docs`, `chore`, `otros`) salen siempre de esa lista cerrada — lo verifiqué en las 15 commits de la corrida final sobre `jacaris`, ninguno se sale del enum.
+- El agente detecta riesgos reales del log sin que se los pida explícitamente por caso (hueco de meses entre commits, mensaje de una sola palabra, muchos commits el mismo día sobre lo mismo).
+- Las tres corridas usaron `git log` real de tres repos míos (`meli-challenge`, `JLeonStack`, `jacaris`), sin inventar ningún commit — quedaron en [`runs/`](runs/).
 
-> Devolvé un resumen claro y organizado por categoría.
+## Qué falta o qué falló
 
-Nada de JSON, nada de lista cerrada de categorías.
-
-En la primera corrida, sobre `meli-challenge`, el agente me devolvió esto (ver [`runs/run1_output.txt`](runs/run1_output.txt)): prosa con títulos en Markdown como "Documentación" y "Mejoras / Backend", categorías que se inventó en el momento, y hasta un commit de README que listó dos veces sin avisar. No servía para nada: no lo podía comparar con la corrida de otro repo ni pegarlo en una tabla.
-
-Ahí toqué solo la pieza de **Formato de salida**: le puse un schema de JSON fijo, con los campos que necesito (`repo`, `by_category`, `commits[]`, etc.) y la aclaración de que no quiero backticks ni texto alrededor. Con eso, la segunda corrida ya me devolvió JSON parseable.
-
-## Segunda iteración
-
-El JSON ya estaba bien armado, pero la **Tarea** todavía decía nomás "clasificá cada commit por categoría", sin especificar qué categorías existen ni qué hacer con un mensaje que no tiene prefijo.
-
-Ahí es donde `JLeonStack` cumplió su función de caso trampa. El log tiene commits como "Delete", "update profile" e "Initial commit", sin ningún `feat:`/`fix:` que los guíe. El agente, al no tener una lista cerrada, se inventó una categoría nueva: `misc` (podés verla en [`runs/run2_output.json`](runs/run2_output.json), tanto en `by_category.misc` como en tres de los commits). Es exactamente el tipo de cosa que rompe la comparación entre corridas: la corrida anterior no tenía esa clave, así que ya no calzan.
-
-Para esta, toqué la **Tarea** y las **Restricciones**: agregué la lista cerrada de categorías (`feat`, `fix`, `refactor`, `docs`, `chore`, `otros`) y la regla de qué hacer si el mensaje no trae prefijo —inferir por contenido, y si no se puede, usar `otros`, nunca inventar algo nuevo—.
-
-Con eso corrí la tercera vez sobre `jacaris`: los 15 commits quedaron clasificados sin salirse nunca de esas seis categorías. Está en [`runs/run3_output.json`](runs/run3_output.json).
+- **Corrida 1 (contrato v1, sobre `meli-challenge`):** el agente devolvió prosa con títulos en Markdown ("Documentación", "Mejoras / Backend") en vez de datos estructurados, con categorías inventadas al vuelo y un commit de README listado dos veces sin marcarlo. Ver [`runs/run1_output.txt`](runs/run1_output.txt). Causa: la sección Formato de salida no tenía schema, solo decía "resumen claro y organizado".
+- **Corrida 2 (contrato v2, sobre `JLeonStack`):** ya devolvía JSON válido, pero frente a commits sin prefijo tipo Conventional Commits ("Delete", "update profile", "Initial commit") el agente se inventó una categoría nueva fuera del schema, `"misc"` — aparece en `by_category.misc` y en tres `commits[].category`. Ver [`runs/run2_output.json`](runs/run2_output.json). Causa: la Tarea decía "clasificá por categoría" sin lista cerrada ni regla para el caso sin prefijo.
+- No probé el caso de un log vacío ni un log con miles de commits (posible problema de tamaño de contexto si el repo tiene mucha actividad en la semana) — quedó afuera del alcance de esta entrega.
 
 ## Qué aprendí
 
-Lo que más me sorprendió es que el contrato no se rompe por instrucciones vagas en general —"sé claro", "organizá bien"— sino en el borde concreto, con el input real que no sigue la convención que yo tenía en la cabeza. El commit sin prefijo, el mensaje repetido, el hueco de meses: cada falla la disparó un caso real, no una relectura del prompt sentado en el escritorio. Y cambiar una sola pieza por vez ayudó a que quede clarísimo qué arregló qué —si hubiera reescrito todo el contrato de una, no sabría si el fix fue el schema o la regla de categorías—.
+El contrato no se rompe por instrucciones vagas en general — se rompe en el borde, con el input real que no sigue la convención que yo tenía en la cabeza (el commit sin prefijo, el mensaje repetido, el hueco de meses). Cada falla la disparó un caso real, no una relectura del prompt. Tocar una sola pieza por vez ayudó a que quedara claro qué arregló qué: si hubiera reescrito todo de una, no sabría si el fix fue el schema o la regla de categorías. Y la categoría `misc` inventada en la corrida 2 me dejó algo grabado: sin restricción cerrada, el modelo siempre encuentra una salida "razonable" para el caso ambiguo, y esa salida no es predecible de antemano — por eso el enum cerrado no es un detalle prolijo, es lo que hace que el output sirva para comparar entre corridas.
 
-La categoría `misc` inventada en la segunda corrida es el ejemplo que más me quedó grabado: sin una restricción cerrada, el modelo siempre va a encontrar una salida "razonable" para el caso ambiguo, y esa salida no es predecible de antemano. Por eso, si el output se va a comparar entre corridas, el enum cerrado no es un detalle prolijo: es lo que hace que el contrato sirva.
+¿No sabés crear el repositorio? Pedíselo a tu tutor IA, literalmente así:
+
+Soy principiante. Quiero crear un repositorio público en GitHub desde el navegador,
+subir mis archivos y un README, sin usar la terminal. Guiame paso a paso,
+uno por vez, y esperá mi confirmación antes de seguir.
