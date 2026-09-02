@@ -1,41 +1,79 @@
 # VozBar
 
-## Qué construí
+Barra de dictado flotante para macOS. Mantené presionada **Option** mientras hablás y, al soltarla, VozBar transcribe el audio y pega el texto en el campo que tenga el foco. Usa el reconocimiento de voz de Apple en el dispositivo, sin enviar audio a una API externa.
 
-VozBar es una mini barra flotante para macOS que transcribe lo que hablo mientras mantengo apretada la tecla Option. Al soltarla pega el texto en el campo que tenga el foco, usando el reconocimiento de voz de Apple on-device sin llamar a una API externa. La armé para la entrega de Agentes de IA, como una automatización de dictado simple y local.
+## Características
 
-## Cómo se lo pedí
+- Dictado *hold-to-talk* con Option derecha (Option izquierda también es compatible).
+- Barra flotante con estado de escucha y transcripción.
+- Pegado automático en la aplicación activa.
+- Copia el resultado al portapapeles como alternativa si no puede pegarlo.
+- Acción alternativa **Dictar / parar** desde el menú de la barra.
+- Reconocimiento de voz local (*on-device*), sujeto a la disponibilidad de macOS.
 
-1. "Quiero una app chica de speech-to-text para macOS. Una barra flotante que se active mientras mantengo apretada una tecla, y al soltar pegue el texto donde esté el cursor. Si puede ser sin API externa, mejor, porque la consigna pide no depender de servicios de afuera."
+## Requisitos
 
-2. "Fijate en Willow Dictation y Wispr Flow como referencia: hold-to-talk, soltar y el texto aparece en el campo de destino."
+- macOS 14 o posterior.
+- Mac compatible con reconocimiento de voz local de Apple.
+- Python 3.10 con headers y librería de desarrollo disponibles.
+- Xcode Command Line Tools (`clang`).
 
-3. "En el repo ya tengo un proyecto que se llama Taller. Reemplazá todo por este nuevo, VozBar."
+Las dependencias de Python se instalan automáticamente en `.venv` la primera vez que se ejecuta el proyecto:
 
-4. "Implementalo con reconocimiento de voz on-device. Si se rompe por permisos de macOS o por PyObjC, iterá hasta que funcione, no pares en el primer error."
+- PyObjC Cocoa, Quartz, AVFoundation y Speech.
 
-5. "Cuando termines, dejame el README con el formato que pide la materia, así lo corrige el agente."
+## Instalación y ejecución
 
-## Qué funciona
+Desde la carpeta `vozbar`:
 
-- `python app.py --check` devuelve `locale=es-MX`, `on_device=True`, `available=True` en mi Mac (Apple Silicon, macOS 26).
-- Correr `./run.sh` construye `VozBar.app` y lo abre. La primera vez pide permisos de Micrófono, Reconocimiento de voz y Accesibilidad.
-- Uso: pongo el cursor en TextEdit o Notas, mantengo Option derecha, hablo, suelto. Aparece "Transcribiendo..." y luego pega el texto. Si no pega, queda en el portapapeles y la barra muestra `Cmd+V`.
-- El menú de la barra tiene "Dictar / parar" como fallback si Option no dispara o falta Accesibilidad.
+```bash
+./run.sh
+```
 
-## Qué falta o qué falló
+El script crea un entorno virtual, instala las dependencias, construye `VozBar.app`, lo firma localmente y lo abre. Para comprobar la disponibilidad del reconocimiento antes de iniciar la app:
 
-- No es un clon completo de Wispr/Willow: le falta limpieza con IA, diccionario personal, estilo por app, soporte para la tecla Fn (usamos Option), empaquetado firmado/notarizado y soporte para Windows/iPhone.
-- Errores que aparecieron y corregí: `python app.py` crasheaba por TCC porque el bundle no tenía `NSSpeechRecognitionUsageDescription`; PyObjC tiró `BadPrototypeError` por nombres de métodos; el primer launcher C no encontraba `PYTHONHOME` ni el path del repo; al correrlo desde Cursor el crash report decía `responsibleProc: Cursor`, así que ahora se abre con `open VozBar.app`.
-- El reconocimiento on-device pide autorización en el primer `open`: hasta aceptar el diálogo, la barra avisa que falta el permiso.
-- No hay forma de saber si el `Cmd+V` realmente pegó; si Accesibilidad falla, el texto queda copiado nada más.
+```bash
+.venv/bin/python app.py --check
+```
 
-## Qué aprendí
+La salida incluye `locale`, `on_device`, `available` y el estado de autorización. El comando debe mostrar `on_device=True` y `available=True` para que el dictado local esté disponible.
 
-Trabajar con un agente es más un loop de probar y corregir que pedir código y listo. Yo describí el producto, el agente compiló, leyó los crash reports de macOS y ajustó el launcher, y yo fui recortando el alcance para que entre en una tarde. Aprendí que en macOS "local" no es solo usar Speech: los permisos siguen al bundle que corre el binario. Sin un `.app` con `Info.plist` correcto, el script de Python muere en TCC. También entendí que la magia de Wispr/Willow no es la barra flotante, sino el modelo que limpia la transcripción; nosotros dejamos eso afuera para cumplir la consigna.
+## Primer uso y permisos
 
-¿No sabés crear el repositorio? Pedíselo a tu tutor IA, literalmente así:
+macOS puede solicitar estos permisos la primera vez que se abre la aplicación:
 
-Soy principiante. Quiero crear un repositorio público en GitHub desde el navegador,
-subir mis archivos y un README, sin usar la terminal. Guiame paso a paso,
-uno por vez, y esperá mi confirmación antes de seguir.
+1. **Micrófono**: permite capturar la voz.
+2. **Reconocimiento de voz**: permite transcribirla.
+3. **Accesibilidad**: permite detectar Option y enviar `Cmd+V` a la aplicación activa.
+
+Si un permiso fue rechazado, habilitá **VozBar** en **Configuración del Sistema → Privacidad y seguridad** y reiniciá la aplicación. El reconocimiento de voz y el micrófono se solicitan para el bundle de la app, por eso se recomienda iniciar siempre con `./run.sh` y no ejecutar `python app.py` directamente.
+
+## Uso
+
+1. Abrí TextEdit, Notas o cualquier campo de texto.
+2. Colocá el cursor donde querés insertar el resultado.
+3. Mantené presionada **Option derecha**.
+4. Hablá y soltá la tecla.
+5. Esperá la transcripción: VozBar pegará el texto automáticamente.
+
+Si el pegado automático no funciona, el texto queda en el portapapeles y la barra indica que podés usar `Cmd+V`. También podés iniciar o detener el dictado desde el menú de la barra de macOS.
+
+## Limitaciones conocidas
+
+- No incluye limpieza de texto con IA, diccionario personal ni estilos por aplicación.
+- Option es el atajo disponible actualmente; no se admite la tecla Fn.
+- La disponibilidad del modo local depende de macOS y del idioma configurado.
+- El proyecto no está firmado ni notarizado para distribución.
+- Si falla Accesibilidad, VozBar puede transcribir y copiar, pero no confirmar que el pegado se haya realizado.
+
+## Estructura del proyecto
+
+- `app.py`: interfaz, barra flotante, atajo y pegado.
+- `speech_engine.py`: autorización y reconocimiento de voz.
+- `build_app.sh`: crea el bundle y el launcher nativo.
+- `run.sh`: construye y abre la aplicación.
+- `macos/Info.plist`: metadatos y descripciones de permisos.
+
+## Licencia
+
+Este proyecto fue creado como una automatización de dictado local para la entrega de Agentes de IA.
