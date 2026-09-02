@@ -1,5 +1,7 @@
 # VozBar
 
+> Dictado de voz local para macOS.
+
 ## Qué construí
 
 VozBar es una mini barra flotante para macOS que transcribe lo que hablo mientras mantengo apretada la tecla Option. Al soltarla pega el texto en el campo que tenga el foco, usando el reconocimiento de voz de Apple on-device sin llamar a una API externa. La armé para la entrega de Agentes de IA, como una automatización de dictado simple y local.
