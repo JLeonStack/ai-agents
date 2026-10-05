@@ -1,0 +1,6 @@
+version: 1
+
+verify:
+  install: "true"
+  lint: python3 -m py_compile vozbar/app.py vozbar/speech_engine.py
+  test: python3 -c "import json, pathlib; [json.loads(p.read_text()) for p in pathlib.Path('contrato-resumen-semanal-repo/runs').glob('*.json')]"
